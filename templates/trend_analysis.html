@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-info text-white">
+            <h4 class="mb-0">Trend Analysis: {{ parameters|join(", ") }}</h4>
+        </div>
+        <div class="card-body">
+            <div class="plot-container mb-4">
+                {% if plot_data is not none %}
+                    <img src="data:image/png;base64,{{ plot_data }}" class="img-fluid">
+                {% else %}
+                    <div class="alert alert-warning">No data available for selected parameters</div>
+                {% endif %}
+            </div>
+            
+            <div class="mt-4">
+                <a href="/reports/trends" class="btn btn-info">New Analysis</a>
+                <a href="/reports" class="btn btn-secondary">Back to Reports</a>
+                <a href="/" class="btn btn-primary">New Recording</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

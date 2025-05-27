@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="text-center"><i class="bi bi-lightning-charge"></i> Element Measurement System</h5>
+        </div>
+
+        <div class="card-body">
+            <form method="POST" id="measurementForm">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="card mb-3">
+                    <div class="card-header bg-info text-white">
+                        <i class="bi bi-diagram-3"></i> Element Configuration
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Element Type</label>
+                                <select class="form-select" name="element_type" id="elementType" required>
+                                    <option value="line">Transmission Line</option>
+                                    <option value="transformer">Power Transformer</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6" id="windingTypeSection" style="display:none;">
+                                <label class="form-label">Winding Configuration</label>
+                                <select class="form-select" name="winding_type" id="windingType">
+                                    <option value="two">Two Winding</option>
+                                    <option value="three">Three Winding</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3" id="commonMeasurements">
+                    <div class="card-header bg-success text-white">
+                        <i class="bi bi-speedometer2"></i> Common Parameters
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label"><i class="bi bi-building"></i> Substation</label>
+                                <input type="text" class="form-control" name="substation_name" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label"><i class="bi bi-columns"></i> Bay Name</label>
+                                <input type="text" class="form-control" name="bay_name" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label"><i class="bi bi-lightning"></i> Voltage Level</label>
+                                <input type="text" class="form-control" name="voltage_level" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label"><i class="bi bi-cpu"></i> Relay Type</label>
+                                <input type="text" class="form-control" name="relay_type" required>
+                            </div>
+                            <div class="col-md-3" id="lineCtRatioSection">
+                                <label class="form-label"></i> CT Ratio</label>
+                                <input type="text" step="0.01" class="form-control" name="ct_ratio">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3" id="lineMeasurements">
+                    <div class="card-header bg-warning text-dark">
+                        <i class="bi bi-transmission"></i> Line Parameters
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3 mb-4">
+                            <h6><i class="bi bi-lightning"></i> Phase Currents (A)</h6>
+                            {% for phase in ['IA', 'IB', 'IC', 'IN'] %}
+                            <div class="col-md-3">
+                                <label class="form-label">{{ phase }} Value</label>
+                                <input type="number" step="0.01" class="form-control" name="{{ phase }}_value">
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <h6><i class="bi bi-bolt"></i> Phase Voltages (kV)</h6>
+                            {% for phase in ['VA', 'VB', 'VC', 'VN'] %}
+                            <div class="col-md-3">
+                                <label class="form-label">{{ phase }} Value</label>
+                                <input type="number" step="0.01" class="form-control" name="{{ phase }}_value">
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <h6><i class="bi bi-diagram-3"></i> Sequence Components</h6>
+                            {% for comp in ['I0', 'I1', 'I2', 'V0', 'V1', 'V2'] %}
+                            <div class="col-md-4">
+                                <label class="form-label">{{ comp }} Value</label>
+                                <input type="number" step="0.01" class="form-control" name="{{ comp }}_value">
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="row g-3">
+                            <h6><i class="bi bi-plug"></i> Power Measurements</h6>
+                            <div class="col-md-4">
+                                <label class="form-label">Active Power (MW)</label>
+                                <input type="number" step="0.01" class="form-control" name="active_power">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Reactive Power (MVAR)</label>
+                                <input type="number" step="0.01" class="form-control" name="reactive_power">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3" id="transformerMeasurements" style="display:none;">
+                    <div class="card-header bg-danger text-white">
+                        <i class="bi bi-transformer"></i> Transformer Parameters
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label"><i class="bi bi-thermometer-high"></i> Oil Temp (°C)</label>
+                                <input type="number" step="0.1" class="form-control" name="oil_temp" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label"><i class="bi bi-sliders"></i> Tap Position</label>
+                                <input type="number" class="form-control" name="tap_position" required>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-3">
+                            <h6><i class="form-label"></i> CT Ratios</h6>
+                            <div class="col-md-4">
+                                <label class="form-label">HV CT Ratio</label>
+                                <input type="text" step="0.01" class="form-control" name="hv_ct_ratio" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">MV CT Ratio</label>
+                                <input type="text" step="0.01" class="form-control" name="mv_ct_ratio" required>
+                            </div>
+                            <div class="col-md-4" id="lvCtRatioSection" style="display:none;">
+                                <label class="form-label">LV CT Ratio</label>
+                                <input type="text" step="0.01" class="form-control" name="lv_ct_ratio">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-3">
+                            <h6><i class="bi bi-lightning-charge"></i> Winding Parameters</h6>
+                            {% for winding in ['hv', 'mv', 'lv'] %}
+                            <div class="col-md-4" id="{{ winding }}WindingSection" style="display:{% if winding == 'lv' %}none{% else %}block{% endif %};">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6>{{ winding|upper }} Winding</h6>
+                                        {% for phase in ['ia', 'ib', 'ic'] %}
+                                        <div class="mb-2">
+                                            <label class="form-label">{{ phase|upper }} Current (A)</label>
+                                            <input type="number" step="0.01" class="form-control" 
+                                                   name="{{ winding }}_{{ phase }}" {% if winding != 'lv' %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="mb-2">
+                                            <label class="form-label">Active Power (MW)</label>
+                                            <input type="number" step="0.01" class="form-control" 
+                                                   name="{{ winding }}_active_power" {% if winding != 'lv' %}required{% endif %}>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label">Reactive Power (MVAR)</label>
+                                            <input type="number" step="0.01" class="form-control" 
+                                                   name="{{ winding }}_reactive_power" {% if winding != 'lv' %}required{% endif %}>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label" class="bi bi-thermometer-high">Winding Temperature (°C)</label>
+                                            <input type="number" step="0.1" class="form-control" 
+                                                   name="{{ winding }}_winding_temp" {% if winding != 'lv' %}required{% endif %}>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const elementType = document.getElementById('elementType');
+                        const windingType = document.getElementById('windingType');
+                        toggleSections(elementType.value);
+
+                        elementType.addEventListener('change', function() {
+                            toggleSections(this.value);
+                        });
+
+                        windingType.addEventListener('change', function() {
+                            const showLv = this.value === 'three';
+                            document.getElementById('lvWindingSection').style.display = showLv ? 'block' : 'none';
+                            document.getElementById('lvCtRatioSection').style.display = showLv ? 'block' : 'none';
+                            
+                            const lvInputs = document.querySelectorAll('#lvWindingSection input, [name="lv_ct_ratio"]');
+                            lvInputs.forEach(input => {
+                                input.required = showLv;
+                                if (!showLv) input.value = '';
+                            });
+                        });
+
+                        document.getElementById('measurementForm').addEventListener('submit', function(event) {
+                            console.log('Form submitted');
+                            const isTransformer = elementType.value === 'transformer';
+                            const isThreeWinding = windingType.value === 'three';
+                            
+                            if (!isTransformer) {
+                                document.querySelectorAll('#transformerMeasurements input').forEach(input => {
+                                    input.required = false;
+                                    input.value = '';
+                                });
+                                document.querySelector('#windingType').required = false;
+                                document.querySelector('[name="ct_ratio"]').required = true;
+                            } else {
+                                document.querySelectorAll('#lineMeasurements input').forEach(input => {
+                                    input.required = false;
+                                    input.value = '';
+                                });
+                                document.querySelector('[name="ct_ratio"]').required = false;
+                                document.querySelector('[name="ct_ratio"]').value = '';
+                            }
+                            if (isTransformer && !isThreeWinding) {
+                                document.querySelectorAll('#lvWindingSection input, [name="lv_ct_ratio"]').forEach(input => {
+                                    input.required = false;
+                                    input.value = '';
+                                });
+                            }
+                        });
+                    });
+
+                    function toggleSections(selectedType) {
+                        const isTransformer = selectedType === 'transformer';
+                        document.getElementById('transformerMeasurements').style.display = isTransformer ? 'block' : 'none';
+                        document.getElementById('lineMeasurements').style.display = isTransformer ? 'none' : 'block';
+                        document.getElementById('windingTypeSection').style.display = isTransformer ? 'block' : 'none';
+                        document.getElementById('lineCtRatioSection').style.display = isTransformer ? 'none' : 'block';
+                        
+                        document.querySelectorAll('#lineMeasurements input').forEach(input => {
+                            input.required = !isTransformer;
+                        });
+                        document.querySelectorAll('#transformerMeasurements input').forEach(input => {
+                            input.required = isTransformer && !input.name.startsWith('lv_');
+                        });
+                        document.querySelector('#windingType').required = isTransformer;
+                        document.querySelector('[name="ct_ratio"]').required = !isTransformer;
+                        document.querySelector('[name="lv_ct_ratio"]').required = false;
+                    }
+                </script>
+
+                <div class="text-center mt-4">
+                    <button type="submit" name="submit_measurement" class="btn btn-primary btn-lg">
+                        <i class="bi bi-save"></i> Save Measurements
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <i class="bi bi-list-ul"></i> Measurement Records
+        </div>
+        <div class="card-body">
+            <form method="POST" action="/export">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col"><input type="checkbox" id="selectAll"> Select</th>
+                                <th scope="col">Timestamp</th>
+                                <th scope="col">Substation</th>
+                                <th scope="col">Bay</th>
+                                <th scope="col">Voltage Level</th>
+                                <th scope="col">Element Type</th>
+                                <th scope="col">Relay Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in records %}
+                            <tr>
+                                <td>
+                                    <input class="form-check-input" type="checkbox" 
+                                           name="record_ids" value="{{ record.id }}">
+                                </td>
+                                <td>{{ record.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>{{ record.substation_name }}</td>
+                                <td>{{ record.bay_name }}</td>
+                                <td>{{ record.voltage_level }}</td>
+                                <td>{{ record.element_type|title }}</td>
+                                <td>{{ record.relay_type }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center">No records found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-download"></i> Export Selected Records
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#selectAll').click(function() {
+            $('input:checkbox').not(this).prop('checked', this.checked);
+        });
+    });
+</script>
+{% endblock %}

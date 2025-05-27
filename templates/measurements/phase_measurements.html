@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- Phase Currents -->
+<div class="card card-section">
+    <div class="card-header bg-primary text-white">
+        <h6 class="mb-0"><i class="bi bi-lightning-charge"></i> Phase Currents (A)</h6>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            {% for phase in ['IA', 'IB', 'IC', 'IN'] %}
+            <div class="col-md-3">
+                <label class="form-label">{{ phase }} Value</label>
+                <input type="number" step="0.01" class="form-control" 
+                       name="{{ phase }}_value" required>
+                <label class="form-label mt-2">{{ phase }} Angle</label>
+                <input type="number" step="0.01" class="form-control" 
+                       name="{{ phase }}_angle" required>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Phase Voltages -->
+<div class="card card-section mt-3">
+    <div class="card-header bg-success text-white">
+        <h6 class="mb-0"><i class="bi bi-battery-charging"></i> Phase Voltages (kV)</h6>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            {% for phase in ['VA', 'VB', 'VC', 'VN'] %}
+            <div class="col-md-3">
+                <label class="form-label">{{ phase }} Value</label>
+                <input type="number" step="0.01" class="form-control" 
+                       name="{{ phase }}_value" required>
+                <label class="form-label mt-2">{{ phase }} Angle</label>
+                <input type="number" step="0.01" class="form-control" 
+                       name="{{ phase }}_angle" required>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Sequence Components -->
+<div class="card card-section mt-3">
+    <div class="card-header bg-warning text-dark">
+        <h6 class="mb-0"><i class="bi bi-diagram-3"></i> Sequence Components</h6>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            {% for comp in ['I0', 'I1', 'I2', 'V0', 'V1', 'V2'] %}
+            <div class="col-md-4">
+                <label class="form-label">{{ comp }} Value</label>
+                <input type="number" step="0.01" class="form-control" 
+                       name="{{ comp }}_value" required>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

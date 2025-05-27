@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Comprehensive Summary Report</h4>
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <h5>Report Filters</h5>
+                <p class="mb-0">Date Range: {{ filters.start_date or 'All' }} to {{ filters.end_date or 'All' }}</p>
+                <p class="mb-0">Substation: {{ filters.substation or 'All' }}</p>
+                <p class="mb-0">Bay: {{ filters.bay or 'All' }}</p>
+            </div>
+
+            <div class="mb-4">
+                <h5>System Overview</h5>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h6>Total Records</h6>
+                                <p class="fs-3">{{ report_data.summary_stats.total_records }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if report_data.currents is not none and not report_data.currents.empty %}
+            <h5 class="mt-4">Phase Current Statistics</h5>
+            <div class="table-responsive mb-5">
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Substation</th><th>Bay</th><th>Phase</th>
+                            <th>Min (A)</th><th>Max (A)</th><th>Avg (A)</th><th>Std Dev</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for index, row in report_data.currents.iterrows() %}
+                        <tr>
+                            <td>{{ index[0] }}</td><td>{{ index[1] }}</td><td>{{ index[2] }}</td>
+                            <td>{{ row[('value', 'min')] | round(2) }}</td>
+                            <td>{{ row[('value', 'max')] | round(2) }}</td>
+                            <td>{{ row[('value', 'mean')] | round(2) }}</td>
+                            <td>{{ row[('value', 'std')] | round(2) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-warning">No current data available</div>
+            {% endif %}
+
+            {% if report_data.voltages is not none and not report_data.voltages.empty %}
+            <h5 class="mt-4">Phase Voltage Statistics</h5>
+            <div class="table-responsive mb-5">
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Substation</th><th>Bay</th><th>Phase</th>
+                            <th>Min (kV)</th><th>Max (kV)</th><th>Avg (kV)</th><th>Std Dev</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for index, row in report_data.voltages.iterrows() %}
+                        <tr>
+                            <td>{{ index[0] }}</td><td>{{ index[1] }}</td><td>{{ index[2] }}</td>
+                            <td>{{ row[('value', 'min')] | round(2) }}</td>
+                            <td>{{ row[('value', 'max')] | round(2) }}</td>
+                            <td>{{ row[('value', 'mean')] | round(2) }}</td>
+                            <td>{{ row[('value', 'std')] | round(2) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-warning">No voltage data available</div>
+            {% endif %}
+
+            {% if report_data.sequence_components is not none and not report_data.sequence_components.empty %}
+            <h5 class="mt-4">Sequence Components Statistics</h5>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Substation</th><th>Bay</th><th>Sequence</th>
+                            <th>Min</th><th>Max</th><th>Avg</th><th>Std Dev</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for index, row in report_data.sequence_components.iterrows() %}
+                        <tr>
+                            <td>{{ index[0] }}</td><td>{{ index[1] }}</td><td>{{ index[2] }}</td>
+                            <td>{{ row[('value', 'min')] | round(2) }}</td>
+                            <td>{{ row[('value', 'max')] | round(2) }}</td>
+                            <td>{{ row[('value', 'mean')] | round(2) }}</td>
+                            <td>{{ row[('value', 'std')] | round(2) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-warning">No sequence components data available</div>
+            {% endif %}
+
+            <div class="mt-4">
+                <a href="/reports" class="btn btn-secondary">Back to Reports</a>
+                <a href="/" class="btn btn-primary">New Recording</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

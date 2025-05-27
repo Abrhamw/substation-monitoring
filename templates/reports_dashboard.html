@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Reports Dashboard</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card report-card h-100 shadow">
+                <div class="card-body">
+                    <h5 class="card-title">📊 Summary Report</h5>
+                    <p class="card-text">Comprehensive system overview with aggregated statistics</p>
+                    <a href="/reports/summary" class="btn btn-primary">Generate Report</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card report-card h-100 shadow">
+                <div class="card-body">
+                    <h5 class="card-title">⚠️ Threshold Alerts</h5>
+                    <p class="card-text">View parameter exceedances and system alerts</p>
+                    <a href="/reports/thresholds" class="btn btn-warning">View Alerts</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card report-card h-100 shadow">
+                <div class="card-body">
+                    <h5 class="card-title">📈 Trend Analysis</h5>
+                    <p class="card-text">Time-based parameter trends and patterns</p>
+                    <a href="/reports/trends" class="btn btn-info">Analyze Trends</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

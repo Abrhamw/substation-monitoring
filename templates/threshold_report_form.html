@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">Threshold Alert Configuration</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Start Date</label>
+                        <input type="date" class="form-control" name="start_date">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">End Date</label>
+                        <input type="date" class="form-control" name="end_date">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Substation</label>
+                        <select class="form-select" name="substation">
+                            <option value="">All Substations</option>
+                            {% for substation in substations %}
+                                <option>{{ substation }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Bay</label>
+                        <select class="form-select" name="bay">
+                            <option value="">All Bays</option>
+                            {% for bay in bays %}
+                                <option>{{ bay }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-warning">Generate Alerts</button>
+                    <a href="/reports" class="btn btn-secondary">Cancel</a>
+                    <a href="/" class="btn btn-primary">New Recording</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
